@@ -2,12 +2,14 @@ package facades;
 
 import dtos.PersonDTO;
 import dtos.PersonsDTO;
+import entities.Address;
 import entities.Person;
 import exceptions.PersonNotFoundException;
 import interfaces.IPersonFacade;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 /**
@@ -38,11 +40,21 @@ public class PersonFacade implements IPersonFacade {
     }
 
     @Override
-    public PersonDTO addPerson(String fName, String lName, String phone) {
+    public PersonDTO addPerson(String fName, String lName, String phone, String street, int zip, String city) {
         EntityManager em = emf.createEntityManager();
+        Person p = new Person(fName, lName, phone);
         try {
-            Person p = new Person(fName, lName, phone);
             em.getTransaction().begin();
+            Query q = em.createQuery("SELECT a FROM Address a WHERE a.street = :street AND a.zip = :zip AND a.city = :city");
+            q.setParameter("street", street);
+            q.setParameter("zip", zip);
+            q.setParameter("city", city);
+            List<Address> adr = q.getResultList();
+            if (adr.size() > 0) {
+                p.setAddress(adr.get(0)); // If already exists
+            } else {
+                p.setAddress(new Address(street, zip, city)); // Make new address
+            }
             em.persist(p);
             em.getTransaction().commit();
             PersonDTO person = new PersonDTO(p);

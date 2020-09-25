@@ -2,6 +2,7 @@ package facades;
 
 import dtos.PersonDTO;
 import dtos.PersonsDTO;
+import entities.Address;
 import entities.Person;
 import exceptions.PersonNotFoundException;
 import static java.util.Collections.list;
@@ -32,6 +33,10 @@ public class PersonFacadeTest {
     private Person p2;
     private Person p3;
     
+    private Address a1;
+    private Address a2;
+    private Address a3;
+    
     public PersonFacadeTest() {
     }
     
@@ -52,9 +57,18 @@ public class PersonFacadeTest {
         p2 = new Person("Logan", "Sanders", "48632965");
         p3 = new Person("Tony", "Stark", "49238686");
         
+        a1 = new Address("Somewhere", 144, "Nowhere");
+        a2 = new Address("Here", 154, "Sure");
+        a3 = new Address("There", 164, "Everywhere");
+        
+        p1.setAddress(a1);
+        p2.setAddress(a2);
+        p3.setAddress(a3);
+        
         try {
             em.getTransaction().begin();
             em.createQuery("DELETE FROM Person").executeUpdate();
+            em.createQuery("DELETE FROM Address").executeUpdate();
             em.persist(p1);
             em.persist(p2);
             em.persist(p3);
@@ -73,7 +87,7 @@ public class PersonFacadeTest {
      */
     @Test
     public void testAddPerson() {
-        PersonDTO person = facade.addPerson("Virgil", "Sanders", "66677700");
+        PersonDTO person = facade.addPerson("Virgil", "Sanders", "66677700", "Light side", 123, "Mind palace");
         PersonsDTO persons = facade.getAllPersons();
         List<PersonDTO> list = persons.getAll();
         

@@ -51,7 +51,7 @@ public class PersonRessource {
     @Consumes({MediaType.APPLICATION_JSON})
     public String addPerson(String person) {
         PersonDTO p = GSON.fromJson(person, PersonDTO.class);
-        PersonDTO newP = FACADE.addPerson(p.getfName(), p.getlName(), p.getPhone());
+        PersonDTO newP = FACADE.addPerson(p.getfName(), p.getlName(), p.getPhone(), p.getStreet(), p.getZip(), p.getCity());
         return GSON.toJson(newP);
     }
     

@@ -1,6 +1,7 @@
 package rest;
 
 import dtos.PersonDTO;
+import entities.Address;
 import entities.Person;
 import entities.RenameMe;
 import utils.EMF_Creator;
@@ -33,6 +34,7 @@ public class PersonResourceTest {
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
     private static Person p1, p2;
+    private static Address a1, a2;
 
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
@@ -71,9 +73,14 @@ public class PersonResourceTest {
         EntityManager em = emf.createEntityManager();
         p1 = new Person("Logan", "Sanders", "12345678");
         p2 = new Person("Tony", "Stark", "87654321");
+        a1 = new Address("Somewhere", 124, "Here");
+        a2 = new Address("Nowhere", 144, "There");
+        p1.setAddress(a1);
+        p2.setAddress(a2);
         try {
             em.getTransaction().begin();
             em.createQuery("DELETE FROM Person").executeUpdate();
+            em.createQuery("DELETE FROM Address").executeUpdate();
             em.persist(p1);
             em.persist(p2);
             em.getTransaction().commit();
@@ -129,7 +136,7 @@ public class PersonResourceTest {
     public void addPerson() throws Exception {
         given()
                 .contentType("application/json")
-                .body(new PersonDTO("Mira", "Nightingale", "48694386"))
+                .body(new PersonDTO("Mira", "Nightingale", "48694386", "Upper Darby", 124, "New Jersey"))
                 .when()
                 .post("person")
                 .then()
