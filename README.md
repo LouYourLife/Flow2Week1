@@ -2,6 +2,6 @@
 
 jpademo er opgaverne i videoerne med jpql - uændret, kun rørt i master branch
 
-Week1 er del 3 af REST og exception handling
+Week1 er del 3 af REST og exception handling - exception test i facadetest tilføjet her
 
 Skift branch for del 1-2
