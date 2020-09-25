@@ -144,9 +144,5 @@ public class PersonResourceTest {
                 .body("lName", equalTo("Nightingale"))
                 .body("id", notNullValue());
     }
-    
-    @Test
-    public void editPerson() throws Exception {
-    }
 
 }
