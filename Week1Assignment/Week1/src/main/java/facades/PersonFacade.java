@@ -74,6 +74,7 @@ public class PersonFacade implements IPersonFacade {
             try {
                 em.getTransaction().begin();
                 em.remove(person);
+                em.remove(person.getAddress());
                 em.getTransaction().commit();
             } finally {
                 em.close();

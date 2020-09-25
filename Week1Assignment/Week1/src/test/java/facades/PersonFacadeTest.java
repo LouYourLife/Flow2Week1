@@ -25,46 +25,46 @@ import static org.junit.jupiter.api.Assertions.*;
 import utils.EMF_Creator;
 
 public class PersonFacadeTest {
-    
+
     private static EntityManagerFactory emf;
     private static PersonFacade facade;
 
     private Person p1;
     private Person p2;
     private Person p3;
-    
+
     private Address a1;
     private Address a2;
     private Address a3;
-    
+
     public PersonFacadeTest() {
     }
-    
+
     @BeforeAll
     public static void setUpClass() {
         emf = EMF_Creator.createEntityManagerFactoryForTest();
         facade = PersonFacade.getPersonFacade(emf);
     }
-    
+
     @AfterAll
     public static void tearDownClass() {
     }
-    
+
     @BeforeEach
     public void setUp() {
         EntityManager em = emf.createEntityManager();
         p1 = new Person("Hisirdoux", "Casperan", "12345678");
         p2 = new Person("Logan", "Sanders", "48632965");
         p3 = new Person("Tony", "Stark", "49238686");
-        
+
         a1 = new Address("Somewhere", 144, "Nowhere");
         a2 = new Address("Here", 154, "Sure");
         a3 = new Address("There", 164, "Everywhere");
-        
+
         p1.setAddress(a1);
         p2.setAddress(a2);
         p3.setAddress(a3);
-        
+
         try {
             em.getTransaction().begin();
             em.createQuery("DELETE FROM Person").executeUpdate();
@@ -77,7 +77,7 @@ public class PersonFacadeTest {
             em.close();
         }
     }
-    
+
     @AfterEach
     public void tearDown() {
     }
@@ -90,7 +90,7 @@ public class PersonFacadeTest {
         PersonDTO person = facade.addPerson("Virgil", "Sanders", "66677700", "Light side", 123, "Mind palace");
         PersonsDTO persons = facade.getAllPersons();
         List<PersonDTO> list = persons.getAll();
-        
+
         assertEquals(4, list.size());
         assertTrue(person != null);
         assertThat(list, hasItems(
@@ -110,7 +110,7 @@ public class PersonFacadeTest {
         PersonDTO person = facade.deletePerson(p1.getId());
         PersonsDTO persons = facade.getAllPersons();
         List<PersonDTO> list = persons.getAll();
-        
+
         assertEquals(2, list.size());
         assertFalse(list.contains(person));
     }
@@ -123,7 +123,7 @@ public class PersonFacadeTest {
         PersonDTO person = facade.getPerson(p1.getId());
         int exp = p1.getId();
         int res = person.getId();
-        
+
         assertTrue(person != null);
         assertEquals(exp, res);
     }
@@ -135,7 +135,7 @@ public class PersonFacadeTest {
     public void testGetAllPersons() {
         PersonsDTO persons = facade.getAllPersons();
         List<PersonDTO> list = persons.getAll();
-        
+
         assertThat(list, everyItem(hasProperty("lName")));
         assertThat(list, hasItems(
                 Matchers.<PersonDTO>hasProperty("fName", is("Logan")),
@@ -156,10 +156,22 @@ public class PersonFacadeTest {
         PersonDTO pEdit = facade.editPerson(new PersonDTO(p1));
         PersonsDTO persons = facade.getAllPersons();
         List<PersonDTO> list = persons.getAll();
-        
+
         assertThat(person.getPhone(), is(not(pEdit.getPhone())));
         assertEquals(person.getfName(), pEdit.getfName());
         assertEquals(person.getlName(), pEdit.getlName());
     }
-    
+
+    @Test
+    public void whenExceptionThrown_thenAssertionSucceeds() {
+        Exception exception = assertThrows(PersonNotFoundException.class, () -> {
+            PersonDTO person = facade.getPerson(100);
+        });
+
+        String expectedMessage = "Person with id : (100) not found";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
 }
